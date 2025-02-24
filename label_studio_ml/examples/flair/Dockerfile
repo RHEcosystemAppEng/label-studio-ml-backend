@@ -4,12 +4,10 @@ ARG PYTHON_VERSION=3.11
 FROM python:${PYTHON_VERSION}-slim AS python-base
 ARG TEST_ENV
 
-WORKDIR /app
-
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=${PORT:-9090} \
-    PIP_CACHE_DIR=/.cache \
+    PIP_CACHE_DIR=/home/flair/cache-dir6 \
     WORKERS=1 \
     THREADS=8
 
@@ -23,26 +21,44 @@ RUN --mount=type=cache,target="/var/cache/apt",sharing=locked \
         git gcc python3-dev; \
     apt-get autoremove -y
 
+RUN mkdir -p /data 
+RUN chmod -R +777 /data
+
+RUN mkdir -p /root/.flair
+RUN chmod -R +777 /root
+
+# Create a custom user with UID 1234 and GID 1234
+RUN groupadd -g 1001 flair && \
+    useradd -m -u 1001 -g flair flair
+
+USER flair
+WORKDIR /home/flair
+
+RUN python3 -m venv env
+RUN . ./env/bin/activate 
+
 # install base requirements
-COPY requirements-base.txt .
+COPY --chown=1001:1001 requirements-base.txt .
 RUN --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
-    pip install -r requirements-base.txt
+    pip install --user -r requirements-base.txt
 
 # install custom requirements
-COPY requirements.txt .
+COPY --chown=1001:1001 requirements.txt .
 RUN --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
-    pip install -r requirements.txt
+    pip install --user -r requirements.txt
 
-# install test requirements if needed
-COPY requirements-test.txt .
-# build only when TEST_ENV="true"
-RUN --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
-    if [ "$TEST_ENV" = "true" ]; then \
-      pip install -r requirements-test.txt; \
-    fi
+COPY --chown=1001:1001 . .
 
-COPY . .
+RUN chown -R 1001 /home/flair \
+    && chmod -R "g+rwX" /home/flair \
+    && chown -R 1001:1001 /home/flair
 
 EXPOSE 9090
+
+ENV PATH="/home/flair/env/bin:$PATH"
+ENV PATH="/home/flair/.local/bin:$PATH"
+ENV PATH="/home/flair/.local/lib/python3.11/site-packages:$PATH"
+
+ENV PYTHONPATH=${PATH}
 
 CMD gunicorn --preload --bind :$PORT --workers $WORKERS --threads $THREADS --timeout 0 _wsgi:app
