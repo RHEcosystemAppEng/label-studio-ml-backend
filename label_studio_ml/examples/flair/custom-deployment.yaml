@@ -4,24 +4,20 @@ items:
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: flair-label-studio-ml
+      name: custom-flair-label-studio-ml
     spec:
       replicas: 1
       selector:
         matchLabels:
-          name: flair-label-studio-ml
+          name: custom-flair-label-studio-ml
       template:
         metadata:
           labels:
-            name: flair-label-studio-ml
+            name: custom-flair-label-studio-ml
         spec:
-          securityContext:
-            seccompProfile: 
-              type: RuntimeDefault 
-            runAsNonRoot: true
           containers:
-            - name: flair-label-studio-ml
-              image: quay.io/rhkp/label-studio-ml-flair-backend:0.0.0
+            - name: custom-flair-label-studio-ml
+              image: quay.io/rhkp/custom-label-studio-ml-flair-backend:0.0.0
               imagePullPolicy: Always
               env:
                 - name: MODEL_DIR
@@ -37,43 +33,28 @@ items:
               ports:
                 - containerPort: 9090
                   protocol: TCP
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities:
-                  drop:
-                    - ALL
-          #     volumeMounts:
-          #       - name: data-server
-          #         mountPath: /data
-          #       - name: data-cache
-          #         mountPath: /root/.cache
-          # volumes:
-          #   - name: data-server
-          #     emptyDir: {}
-          #   - name: data-cache
-          #     emptyDir: {}
   - kind: Service
     apiVersion: v1
     metadata:
-      name: flair-label-studio-ml
+      name: custom-flair-label-studio-ml
       labels:
-        name: flair-label-studio-ml
+        name: custom-flair-label-studio-ml
     spec:
       ports:
         - port: 9090
           protocol: TCP
           targetPort: 9090
       selector:
-        name: flair-label-studio-ml
+        name: custom-flair-label-studio-ml
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: flair-label-studio-ml
+      name: custom-flair-label-studio-ml
       labels:
-        name: flair-label-studio-ml
+        name: custom-flair-label-studio-ml
     spec:
       port:
         targetPort: 9090
       to:
         kind: Service
-        name: flair-label-studio-ml
+        name: custom-flair-label-studio-ml

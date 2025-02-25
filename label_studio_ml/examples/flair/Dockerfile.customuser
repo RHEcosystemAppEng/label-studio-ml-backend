@@ -7,7 +7,7 @@ ARG TEST_ENV
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=${PORT:-9090} \
-    PIP_CACHE_DIR=/home/flair/cache-dir6 \
+    PIP_CACHE_DIR=/.cache \
     WORKERS=1 \
     THREADS=8
 
@@ -26,6 +26,9 @@ RUN chmod -R +777 /data
 
 RUN mkdir -p /root/.flair
 RUN chmod -R +777 /root
+
+RUN mkdir -p /.cache
+RUN chmod -R +777 /.cache
 
 # Create a custom user with UID 1234 and GID 1234
 RUN groupadd -g 1001 flair && \

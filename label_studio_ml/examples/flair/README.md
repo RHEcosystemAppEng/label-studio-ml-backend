@@ -62,3 +62,26 @@ $ curl http://localhost:9090/health
 ## Parameters
 
 - `FLAIR_MODEL_NAME`: The name of the Flair model to use. Default is `ner`. See all options [here](https://flairnlp.github.io/docs/tutorial-basics/tagging-entities#list-of-ner-models)
+
+## Deploying to OpenShift
+
+### Setup a service account to run the Flair backend (ensure your user has admin privileges)
+```shell
+oc login --token=<token> --server=<server-url>
+oc create sa flair-sa
+oc get sa
+oc adm policy add-scc-to-user anyuid -z flair-sa -n <your namespace>
+```
+
+### Deploy and run the Flair backend
+```shell
+oc delete -f original-deployment.yaml; oc apply -f original-deployment.yaml
+oc get deployment
+oc set sa deployment original-flair-label-studio-ml flair-sa
+```
+
+### Verify the service is running and returning response
+```shell 
+oc get route
+curl http://<your route>/health
+```
