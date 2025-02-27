@@ -65,7 +65,7 @@ $ curl http://localhost:9090/health
 
 ## Deploying to OpenShift
 
-### Setup a service account to run the Flair backend (ensure your user has admin privileges)
+### Setup a service account to run the Flair backend (ensure your user has cluster-admin privileges)
 ```shell
 oc login --token=<token> --server=<server-url>
 oc create sa flair-sa
@@ -75,13 +75,26 @@ oc adm policy add-scc-to-user anyuid -z flair-sa -n <your namespace>
 
 ### Deploy and run the Flair backend
 ```shell
-oc delete -f original-deployment.yaml; oc apply -f original-deployment.yaml
+oc delete -f deployment-backend.yaml; oc apply -f deployment-backend.yaml
 oc get deployment
-oc set sa deployment original-flair-label-studio-ml flair-sa
+oc set sa deployment label-studio-backend flair-sa
 ```
 
-### Verify the service is running and returning response
+#### Verify the backend service is running and returning response
 ```shell 
 oc get route
 curl http://<your route>/health
+```
+
+### Deploy and run the LabelStudio UI
+```shell
+oc delete -f deployment-ui.yaml; oc apply -f deployment-ui.yaml
+oc get deployment
+oc set sa deployment label-studio-ui flair-sa
+```
+
+#### Verify the UI service is running by naviga
+```shell 
+oc get route
+open http://<label studio ui route>
 ```

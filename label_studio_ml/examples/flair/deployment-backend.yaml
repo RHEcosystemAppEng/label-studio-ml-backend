@@ -4,20 +4,20 @@ items:
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: original-flair-label-studio-ml
+      name: label-studio-backend
     spec:
       replicas: 1
       selector:
         matchLabels:
-          name: original-flair-label-studio-ml
+          name: label-studio-backend
       template:
         metadata:
           labels:
-            name: original-flair-label-studio-ml
+            name: label-studio-backend
         spec:
           containers:
-            - name: original-flair-label-studio-ml
-              image: quay.io/rhkp/original-label-studio-ml-flair-backend:0.0.0
+            - name: flair-backend
+              image: docker.io/heartexlabs/label-studio-ml-backend:flair-master
               imagePullPolicy: Always
               env:
                 - name: MODEL_DIR
@@ -36,25 +36,25 @@ items:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: original-flair-label-studio-ml
+      name: label-studio-backend
       labels:
-        name: original-flair-label-studio-ml
+        name: label-studio-backend
     spec:
       ports:
         - port: 9090
           protocol: TCP
           targetPort: 9090
       selector:
-        name: original-flair-label-studio-ml
+        name: label-studio-backend
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: original-flair-label-studio-ml
+      name: label-studio-backend
       labels:
-        name: original-flair-label-studio-ml
+        name: label-studio-backend
     spec:
       port:
         targetPort: 9090
       to:
         kind: Service
-        name: original-flair-label-studio-ml
+        name: label-studio-backend
