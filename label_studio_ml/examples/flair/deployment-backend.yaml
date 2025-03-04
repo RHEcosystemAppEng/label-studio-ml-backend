@@ -4,16 +4,16 @@ items:
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: label-studio-backend
+      name: label-studio-backend-flair
     spec:
       replicas: 1
       selector:
         matchLabels:
-          name: label-studio-backend
+          name: label-studio-backend-flair
       template:
         metadata:
           labels:
-            name: label-studio-backend
+            name: label-studio-backend-flair
         spec:
           containers:
             - name: flair-backend
@@ -36,25 +36,25 @@ items:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: label-studio-backend
+      name: label-studio-backend-flair
       labels:
-        name: label-studio-backend
+        name: label-studio-backend-flair
     spec:
       ports:
         - port: 9090
           protocol: TCP
           targetPort: 9090
       selector:
-        name: label-studio-backend
+        name: label-studio-backend-flair
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: label-studio-backend
+      name: label-studio-backend-flair
       labels:
-        name: label-studio-backend
+        name: label-studio-backend-flair
     spec:
       port:
         targetPort: 9090
       to:
         kind: Service
-        name: label-studio-backend
+        name: label-studio-backend-flair

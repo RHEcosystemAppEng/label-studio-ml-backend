@@ -496,3 +496,19 @@ MobileSAM paper-
   year={2023}
 }
 ```
+
+## Deploying the backend to OpenShift
+
+### Deploy and run the backend service
+```shell
+oc delete -f deployment-backend.yaml; oc apply -f deployment-backend.yaml
+# Wait for the Pod to come to running/error state (navigate to Workloads->Pods in OpenShift UI console) before running the following steps
+oc get deployment
+oc set sa deployment label-studio-backend-sam runner-sa
+```
+
+### Verify the backend service is running and returning a response
+```shell 
+oc get route
+curl http://<your route>/health
+```

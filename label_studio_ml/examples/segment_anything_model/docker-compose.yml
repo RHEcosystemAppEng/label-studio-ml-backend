@@ -25,7 +25,7 @@ services:
       # specify these parameters if you want to use basic auth for the model server
       - BASIC_AUTH_USER=
       - BASIC_AUTH_PASS=
-      # Change this to your model name: MobileSAM or SAM
+      # Change this to your model name: MobileSAM or SAM or ONNX
       - SAM_CHOICE=MobileSAM
       - LOG_LEVEL=DEBUG
       # Enable this to use the GPU
@@ -41,8 +41,8 @@ services:
       # Do not use 'localhost' as it does not work within Docker containers.
       # Use prefix 'http://' or 'https://' for the URL always.
       # Determine the actual IP using 'ifconfig' (Linux/Mac) or 'ipconfig' (Windows).
-      - LABEL_STUDIO_HOST=
-      - LABEL_STUDIO_ACCESS_TOKEN=
+      - LABEL_STUDIO_HOST=http://host.docker.internal:8080
+      - LABEL_STUDIO_ACCESS_TOKEN=3febbb103045e50e96dae2499df316299d73220e
 
     ports:
       - 9090:9090
