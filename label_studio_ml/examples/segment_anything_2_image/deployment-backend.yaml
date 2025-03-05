@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: List
+items:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: label-studio-backend-sam2
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          name: label-studio-backend-sam2
+      template:
+        metadata:
+          labels:
+            name: label-studio-backend-sam2
+        spec:
+          containers:
+            - name: sam2-backend
+              image: quay.io/rhkp/image-sam2:0.0.0
+              imagePullPolicy: Always
+              resources:
+                limits:
+                  cpu: '2'
+                  memory: 6Gi
+                  nvidia.com/gpu: '1'
+                requests:
+                  cpu: '1'
+                  memory: 2Gi
+                  nvidia.com/gpu: '1'              
+              env:
+                - name: BASIC_AUTH_USER
+                  value: ""
+                - name: BASIC_AUTH_PASS
+                  value: ""
+                - name: MODEL_DIR
+                  value: /data/models
+                - name: SAM_CHOICE
+                  value: MobileSAM
+                - name: WORKERS
+                  value: "1"
+                - name: THREADS
+                  value: "8"
+                - name: LOG_LEVEL
+                  value: DEBUG
+                - name: DEVICE
+                  value: cuda
+                - name: MODEL_CONFIG
+                  value: configs/sam2.1/sam2.1_hiera_l.yaml
+                - name: MODEL_CHECKPOINT
+                  value: sam2.1_hiera_large.pt
+                - name: LABEL_STUDIO_URL
+                  value: "http://label-studio-ui-arhkp1.apps.ai-dev01.kni.syseng.devcluster.openshift.com/"
+                - name: LABEL_STUDIO_API_KEY
+                  value: "0c11dd682877fff406ebf7f1d281a9def6bfd26b" 
+              ports:
+                - containerPort: 9090
+                  protocol: TCP
+          tolerations:
+            - key: odh-notebook
+              operator: Exists
+              effect: NoSchedule
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: label-studio-backend-sam2
+      labels:
+        name: label-studio-backend-sam2
+    spec:
+      ports:
+        - port: 9090
+          protocol: TCP
+          targetPort: 9090
+      selector:
+        name: label-studio-backend-sam2
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: label-studio-backend-sam2
+      labels:
+        name: label-studio-backend-sam2
+    spec:
+      port:
+        targetPort: 9090
+      to:
+        kind: Service
+        name: label-studio-backend-sam2
