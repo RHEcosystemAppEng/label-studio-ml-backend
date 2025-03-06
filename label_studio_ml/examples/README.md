@@ -28,3 +28,5 @@ open http://<label studio ui route>
 Please refer to individual backends ( more coming soon )
 * [Flair](flair/README.md)
 * [Segment Anything Model](segment_anything_model/README.md)
+* [Segment Anything Model2](segment_anything_2_image/README.md)
+* [Easyocr](easyocr/README.md)
