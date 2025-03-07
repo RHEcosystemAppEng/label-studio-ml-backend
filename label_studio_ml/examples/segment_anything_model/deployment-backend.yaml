@@ -35,10 +35,15 @@ items:
                 - name: LOG_LEVEL
                   value: DEBUG
                 - name: LABEL_STUDIO_HOST
-                  value: "http://label-studio-ui-arhkp1.apps.ai-dev01.kni.syseng.devcluster.openshift.com/"
+                  valueFrom:
+                    secretKeyRef:
+                      name: lbl-studio-ui-items 
+                      key: LBL_STUDIO_UI_URL
                 - name: LABEL_STUDIO_ACCESS_TOKEN
-                  value: "0c11dd682877fff406ebf7f1d281a9def6bfd26b"
-                                          
+                  valueFrom:
+                    secretKeyRef:
+                      name: lbl-studio-ui-items 
+                      key: LBL_STUDIO_ACCESS_TOKEN             
               ports:
                 - containerPort: 9090
                   protocol: TCP

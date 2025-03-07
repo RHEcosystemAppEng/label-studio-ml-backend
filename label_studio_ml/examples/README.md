@@ -21,7 +21,16 @@ oc set sa deployment label-studio-ui runner-sa
 ## Verify the UI service is running
 ```shell 
 oc get route
-open http://<label studio ui route>
+LBL_STUDIO_UI_URL=http://`oc get route label-studio-ui -o jsonpath='{.spec.host}'`
+open "$LBL_STUDIO_UI_URL"
+```
+
+## Label Studio UI Environmet variables and OpenShift secrets
+```shell
+LBL_STUDIO_ACCESS_TOKEN=<ACCESS TOKEN> # Login to Label Studio UI, Account and Settings, copy Access Token
+
+# Create OpenShift secrets for use by various backends, as needed later
+oc create secret generic lbl-studio-ui-items --from-literal=LBL_STUDIO_UI_URL=$LBL_STUDIO_UI_URL --from-literal=LBL_STUDIO_ACCESS_TOKEN=$LBL_STUDIO_ACCESS_TOKEN
 ```
 
 ## Deploying Machine Learning Model Backends for use in LabelStudio to OpenShift
