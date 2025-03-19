@@ -1,5 +1,12 @@
 # True: Delete and create a new project, False: Return existing project
-RECREATE_PROJECT=False
+RECREATE_PROJECT=True
+
+def set_recreate_project(recreate):
+    RECREATE_PROJECT = recreate
+    print(RECREATE_PROJECT)
+
+def get_recreate_project():
+    return RECREATE_PROJECT
 
 def get_project_by_title(ls, project_title):
     projects = ls.projects.list()
