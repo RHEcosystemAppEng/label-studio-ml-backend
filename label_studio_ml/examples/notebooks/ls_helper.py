@@ -1,12 +1,5 @@
-# True: Delete and create a new project, False: Return existing project
-RECREATE_PROJECT=True
-
-def set_recreate_project(recreate):
-    RECREATE_PROJECT = recreate
-    print(RECREATE_PROJECT)
-
-def get_recreate_project():
-    return RECREATE_PROJECT
+from json import JSONDecodeError
+from label_studio_sdk.core.api_error import ApiError
 
 def get_project_by_title(ls, project_title):
     projects = ls.projects.list()
@@ -20,7 +13,6 @@ def get_project_by_id(ls, project_id):
     for p in projects:
         if p.id == project_id:
             return p
-        
     return None
 
 def project_exists(ls, project_title):
@@ -37,19 +29,15 @@ def create_project(ls, project_title, label_config):
     )
     return project
 
-def get_or_create_project(ls, project_title, label_config=None):
+def get_or_create_project(ls, project_title, label_config=None, recreate_project=False):
     p = get_project_by_title(ls, project_title)
-    if RECREATE_PROJECT:
+    if recreate_project:
         if p != None:
             ls.projects.delete(p.id)
         created_project = create_project(ls, project_title, label_config)
         return created_project
     else:
         return p
-    
-from json import JSONDecodeError
-from label_studio_sdk.core.api_error import ApiError
-
 
 def get_or_create_model(ls, 
                         title='MODEL',
