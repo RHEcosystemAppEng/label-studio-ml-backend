@@ -67,9 +67,7 @@ def get_or_create_model(ls,
 def export_annotated_data(project_id, ls_url, api_key):
     # Get the export of the annotations
     url = ls_url + "/api/projects/" + str(project_id) + "/export"
-    print(url)
     token = 'Token ' + api_key
-    print(token)
     Headers = { 'Authorization' : token }
     response = requests.get(url, headers=Headers )
     return response
