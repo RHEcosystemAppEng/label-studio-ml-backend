@@ -132,3 +132,8 @@ dmypy.json
 .github/actions-hub
 
 .idea/
+
+.DS_Store
+cache.db
+
+exports/

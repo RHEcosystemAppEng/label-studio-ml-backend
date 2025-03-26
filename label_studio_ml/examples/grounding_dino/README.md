@@ -95,3 +95,18 @@ deploy:
 
 If you are looking for GroundingDINO integration with SAM, [check this example](https://github.com/HumanSignal/label-studio-ml-backend/tree/master/label_studio_ml/examples/grounding_sam).
 
+## Deploying the backend to OpenShift
+
+### Deploy and run the backend service
+```shell
+oc delete -f deployment-backend.yaml; oc apply -f deployment-backend.yaml
+# Wait for the Pod to come to running/error state (navigate to Workloads->Pods in OpenShift UI console) before running the following steps
+oc get deployment
+oc set sa deployment label-studio-backend-grounding-dino runner-sa
+```
+
+### Verify the backend service is running and returning a response
+```shell 
+oc get route
+curl http://<your route>/health
+```

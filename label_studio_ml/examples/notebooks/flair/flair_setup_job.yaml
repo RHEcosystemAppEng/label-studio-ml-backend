@@ -1,0 +1,61 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: flair-ml-automator-config
+data: 
+  FLAIR_PROJECT_NAME: NER-FLAIR-TEST
+  RECREATE_PROJECT: '1' # 1=Recreate Project 0=Do not recreate project
+  LOAD_TASKS_FROM_LOCAL_FILE: '1' # 1=Use file to create initial tasks 0=Load sample tasks from this script
+  LOCAL_TASKS_FILE: sample_data/flair_ner.txt
+  LABEL_STUDIO_ML_BACKEND_URL: <flair ml backend url>
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: falir-ml-automation-job
+spec:
+  template:
+    spec:
+      serviceAccountName: runner-sa
+      containers:
+        - name: falir-ml-automator
+          image: quay.io/rhkp/flair-automator:0.0.0
+          env:
+            - name: LABEL_STUDIO_URL
+              valueFrom:
+                secretKeyRef:
+                  name: lbl-studio-ui-items 
+                  key: LBL_STUDIO_UI_URL            
+            - name: LABEL_STUDIO_ML_BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: flair-ml-automator-config
+                  key: LABEL_STUDIO_ML_BACKEND_URL             
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lbl-studio-ui-items 
+                  key: LBL_STUDIO_ACCESS_TOKEN    
+            - name: FLAIR_PROJECT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: flair-ml-automator-config
+                  key: FLAIR_PROJECT_NAME            
+            - name: RECREATE_PROJECT
+              valueFrom:
+                configMapKeyRef:
+                  name: flair-ml-automator-config
+                  key: RECREATE_PROJECT            
+            - name: LOAD_TASKS_FROM_LOCAL_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: flair-ml-automator-config
+                  key: LOAD_TASKS_FROM_LOCAL_FILE            
+            - name: LOCAL_TASKS_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: flair-ml-automator-config
+                  key: LOCAL_TASKS_FILE            
+      restartPolicy: Never
+  backoffLimit: 4

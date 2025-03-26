@@ -127,3 +127,19 @@ These options allow you to customize the behavior of the EasyOCR model connectio
 # Customization
 
 The ML backend can be customized by adding your own models and logic inside the `./easyocr` directory. 
+
+## Deploying the backend to OpenShift
+
+### Deploy and run the backend service
+```shell
+oc delete -f deployment-backend.yaml; oc apply -f deployment-backend.yaml
+# Wait for the Pod to come to running/error state (navigate to Workloads->Pods in OpenShift UI console) before running the following steps
+oc get deployment
+oc set sa deployment label-studio-backend-easyocr runner-sa
+```
+
+### Verify the backend service is running and returning a response
+```shell 
+oc get route
+curl http://<your route>/health
+```

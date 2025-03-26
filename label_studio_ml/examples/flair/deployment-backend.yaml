@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: List
+items:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: label-studio-backend-flair
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          name: label-studio-backend-flair
+      template:
+        metadata:
+          labels:
+            name: label-studio-backend-flair
+        spec:
+          containers:
+            - name: flair-backend
+              image: docker.io/heartexlabs/label-studio-ml-backend:flair-master
+              imagePullPolicy: Always
+              env:
+                - name: MODEL_DIR
+                  value: /data/models
+                - name: FLAIR_MODEL_NAME
+                  value: ner-multi
+                - name: WORKERS
+                  value: "1"
+                - name: THREADS
+                  value: "8"
+                - name: LOG_LEVEL
+                  value: DEBUG                            
+              ports:
+                - containerPort: 9090
+                  protocol: TCP
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: label-studio-backend-flair
+      labels:
+        name: label-studio-backend-flair
+    spec:
+      ports:
+        - port: 9090
+          protocol: TCP
+          targetPort: 9090
+      selector:
+        name: label-studio-backend-flair
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: label-studio-backend-flair
+      labels:
+        name: label-studio-backend-flair
+    spec:
+      port:
+        targetPort: 9090
+      to:
+        kind: Service
+        name: label-studio-backend-flair

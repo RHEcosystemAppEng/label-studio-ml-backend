@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: List
+items:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: label-studio-ui
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          name: label-studio-ui
+      template:
+        metadata:
+          labels:
+            name: label-studio-ui
+        spec:     
+          containers:
+            - name: label-studio-ui
+              image: docker.io/heartexlabs/label-studio:latest
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: label-studio-ui
+      labels:
+        name: label-studio-ui
+    spec:
+      ports:
+        - port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        name: label-studio-ui
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: label-studio-ui
+      labels:
+        name: label-studio-ui
+    spec:
+      port:
+        targetPort: 8080
+      to:
+        kind: Service
+        name: label-studio-ui

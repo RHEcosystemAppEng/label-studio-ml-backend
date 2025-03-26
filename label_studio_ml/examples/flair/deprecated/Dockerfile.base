@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+FROM heartexlabs/label-studio-ml-backend:flair-master
+
+WORKDIR /app
+
+RUN chmod -R 777 /app
+
+RUN mkdir -p /data/models
+RUN mkdir -p /.cache/huggingface/hub
+RUN mkdir -p /root/.flair/
+RUN chmod -R 777 /data
+RUN chmod -R 777 /.cache
+RUN chmod -R 777 /root/.flair
+
+CMD gunicorn --preload --bind :$PORT --workers $WORKERS --threads $THREADS --timeout 0 _wsgi:app
