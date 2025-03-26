@@ -1,0 +1,49 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sam-ml-automator-config
+data: 
+  SAM_PROJECT_NAME: SAM-NO-GPU
+  RECREATE_PROJECT: '1' # 1=Recreate Project 0=Do not recreate project
+  LABEL_STUDIO_ML_BACKEND_URL: <sam ml backend url>
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sam-ml-automation-job
+spec:
+  template:
+    spec:
+      serviceAccountName: runner-sa
+      containers:
+        - name: sam-ml-automator
+          image: quay.io/rhkp/sam-automator:0.0.0
+          env:
+            - name: LABEL_STUDIO_URL
+              valueFrom:
+                secretKeyRef:
+                  name: lbl-studio-ui-items 
+                  key: LBL_STUDIO_UI_URL            
+            - name: LABEL_STUDIO_ML_BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sam-ml-automator-config
+                  key: LABEL_STUDIO_ML_BACKEND_URL             
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lbl-studio-ui-items 
+                  key: LBL_STUDIO_ACCESS_TOKEN    
+            - name: SAM_PROJECT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: sam-ml-automator-config
+                  key: SAM_PROJECT_NAME            
+            - name: RECREATE_PROJECT
+              valueFrom:
+                configMapKeyRef:
+                  name: sam-ml-automator-config
+                  key: RECREATE_PROJECT            
+      restartPolicy: Never
+  backoffLimit: 4
