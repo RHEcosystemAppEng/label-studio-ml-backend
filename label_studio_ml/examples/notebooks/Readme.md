@@ -44,3 +44,21 @@ oc apply -f ./sam/sam_setup_job.yaml
 * Ensure that the job ran successfully by examining the Job's pod logs.
 
 * Login to the Label Studio UI and see if the project was created with the initial images imported.
+
+### Build and Run the Grounding Dino Project Setup Automator
+* Build and push the Grounding Dino ML backend image
+```shell
+pwd # ensure you are in label-studio-ml-backend/label_studio_ml/examples/notebooks directory
+docker build -f ./grounding_diono/Dockerfile  --platform=linux/amd64 -t quay.io/<your user>/grounding-dino-automator:0.0.0 . 
+docker push quay.io/<your user>/grounding-dino-automator:0.0.0
+```
+
+* Start and run the Flair Project Setup Automator
+```shell
+oc delete -f ./grounding_dino/grounding_dino_setup_job.yaml
+oc apply -f ./grounding_dino/grounding_dino_setup_job.yaml
+```
+
+* Ensure that the job ran successfully by examining the Job's pod logs.
+
+* Login to the Label Studio UI and see if the project was created with the initial images imported.
